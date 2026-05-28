@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { RevenueDataPoint } from "@/app/dashboard/types"
-import { formatearMoneda } from "@/app/dashboard/utils/formatters"
+import { formatCurrency } from "@/app/dashboard/utils/formatters"
 
 interface RevenueChartProps {
   data: RevenueDataPoint[]
@@ -20,7 +20,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
     viewMode === "revenue" ? point.revenue : point.orders
 
   const formatValue = (val: number) =>
-    viewMode === "revenue" ? formatearMoneda(val) : val.toLocaleString()
+    viewMode === "revenue" ? formatCurrency(val) : val.toLocaleString("en-US")
 
   const activeData = activeMonth
     ? data.find((d) => d.month === activeMonth)
@@ -107,13 +107,13 @@ export function RevenueChart({ data }: RevenueChartProps) {
         <span>
           Total:{" "}
           {viewMode === "revenue"
-            ? formatearMoneda(data.reduce((s, d) => s + d.revenue, 0))
+            ? formatCurrency(data.reduce((s, d) => s + d.revenue, 0))
             : data.reduce((s, d) => s + d.orders, 0).toLocaleString()}
         </span>
         <span>
           Avg:{" "}
           {viewMode === "revenue"
-            ? formatearMoneda(
+            ? formatCurrency(
                 data.reduce((s, d) => s + d.revenue, 0) / data.length
               )
             : Math.round(

@@ -1,74 +1,51 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { memo, useState } from "react"
+import Image from "next/image"
 import type { Product } from "@/app/dashboard/types"
-import { calcularDescuento } from "@/app/dashboard/utils/helpers"
-import { formatearMoneda } from "@/app/dashboard/utils/formatters"
+import { calculateDiscount } from "@/app/dashboard/utils/helpers"
+import { formatCurrency } from "@/app/dashboard/utils/formatters"
 
 interface ProductCardProps {
-  product: Product
-  allProducts: Product[]
+  readonly product: Product
 }
 
-export function ProductCard({ product, allProducts }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
+export const ProductCard = memo(function ProductCard({
+  product,
+}: ProductCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [esFavorito, setEsFavorito] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
+  const [isFavorite, setIsFavorite] = useState(false)
 
-  const foundProduct = allProducts.find((p) => p.id === product.id)
-  const precioConDescuento = foundProduct
-    ? calcularDescuento(foundProduct.price, foundProduct.originalPrice)
-    : 0
+  const discount = calculateDiscount(product.price, product.originalPrice)
 
-  const manejarClickFavorito = (e: React.MouseEvent) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setEsFavorito((prev) => !prev)
+    setIsFavorite((prev) => !prev)
   }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && cardRef.current) {
-            cardRef.current.style.opacity = "1"
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current)
-    }
-  }, [])
 
   return (
     <div
-      ref={cardRef}
-      className={`bg-white rounded-lg border transition-all duration-200 overflow-hidden ${
-        isHovered ? "shadow-lg border-indigo-200" : "shadow-sm border-gray-100"
-      }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="bg-white rounded-lg border shadow-sm border-gray-100 hover:shadow-lg hover:border-indigo-200 transition-all duration-200 overflow-hidden"
       onClick={() => setIsExpanded((prev) => !prev)}
     >
-      <div className="relative">
-        <img
+      <div className="relative h-40">
+        <Image
           src={product.image}
           alt={product.name}
-          className="w-full h-40 object-cover"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+          className="object-cover"
         />
         <button
           className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow-sm hover:bg-white transition-colors"
-          onClick={manejarClickFavorito}
-          aria-label={esFavorito ? "Remove from favorites" : "Add to favorites"}
+          onClick={handleFavoriteClick}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
-          {esFavorito ? "❤️" : "🤍"}
+          {isFavorite ? "❤️" : "🤍"}
         </button>
-        {precioConDescuento > 0 && (
+        {discount > 0 && (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-            -{precioConDescuento}%
+            -{discount}%
           </span>
         )}
       </div>
@@ -95,11 +72,11 @@ export function ProductCard({ product, allProducts }: ProductCardProps) {
 
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-gray-900">
-            {formatearMoneda(product.price)}
+            {formatCurrency(product.price)}
           </span>
           {product.originalPrice > product.price && (
             <span className="text-xs text-gray-400 line-through">
-              {formatearMoneda(product.originalPrice)}
+              {formatCurrency(product.originalPrice)}
             </span>
           )}
         </div>
@@ -110,4 +87,4 @@ export function ProductCard({ product, allProducts }: ProductCardProps) {
       </div>
     </div>
   )
-}
+})

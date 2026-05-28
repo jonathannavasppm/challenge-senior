@@ -1,17 +1,16 @@
 "use client"
 
+import { useMemo } from "react"
 import { usePolling } from "@/app/dashboard/hooks/usePolling"
-import { formatearFecha } from "@/app/dashboard/utils/formatters"
-
-const ACTIVITY_ICONS: Record<string, string> = {
-  order: "🛍️",
-  signup: "👤",
-  refund: "↩️",
-  review: "⭐",
-}
+import { formatDate } from "@/app/dashboard/utils/formatters"
+import { ACTIVITY_ICONS } from "@/app/dashboard/context/DashboardContext/const"
 
 export function RecentActivity() {
   const { activities, lastUpdated, isPolling } = usePolling()
+
+  const formattedTime = useMemo(() => {
+    return lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : ""
+  }, [lastUpdated])
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -21,9 +20,8 @@ export function RecentActivity() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activity
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Last updated:{" "}
-              {new Date(lastUpdated).toLocaleTimeString()}
+            <p className="text-xs text-gray-400 mt-0.5" suppressHydrationWarning>
+              Last updated: {formattedTime}
             </p>
           </div>
           <div className="flex items-center gap-1.5">
@@ -49,8 +47,8 @@ export function RecentActivity() {
               <p className="text-sm text-gray-700 leading-tight">
                 {activity.message}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {formatearFecha(activity.timestamp, "relative")}
+              <p className="text-xs text-gray-400 mt-0.5" suppressHydrationWarning>
+                {formatDate(activity.timestamp, "relative")}
               </p>
             </div>
           </div>

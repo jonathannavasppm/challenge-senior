@@ -1,45 +1,20 @@
-"use client"
-
-import { useState, useEffect, useRef } from "react"
+import Image from "next/image"
 
 const BANNER_IMAGE_URL =
-  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=4000&q=100"
+  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&q=80"
 
 export function HeroBanner() {
-  const [imageWidth, setImageWidth] = useState(0)
-  const bannerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (bannerRef.current) {
-        const { width } = bannerRef.current.getBoundingClientRect()
-        setImageWidth(width)
-      }
-    }
-
-    handleResize()
-    window.addEventListener("resize", handleResize)
-
-    return () => {
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [])
-
   return (
-    <div ref={bannerRef} className="relative w-full overflow-hidden rounded-xl">
-      <img
+    <div className="relative w-full aspect-16/6 overflow-hidden rounded-xl">
+      <Image
         src={BANNER_IMAGE_URL}
-        alt="banner"
-        style={{ height: "500px", width: imageWidth || "100%" }}
-        className="object-cover w-full"
+        alt="Summer sale promotional banner — up to 60% off on electronics and clothing"
+        fill
+        priority
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1400px"
+        className="object-cover"
       />
-      <div
-        className="absolute inset-0 flex flex-col justify-end p-8"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%)",
-        }}
-      >
+      <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/70 flex flex-col justify-end p-8">
         <h1 className="text-4xl font-bold text-white mb-2">
           Summer Sale — Up to 60% Off
         </h1>

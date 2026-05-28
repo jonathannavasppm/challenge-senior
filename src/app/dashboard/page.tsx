@@ -1,7 +1,5 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import type { DashboardData } from "@/app/dashboard/types"
+import { Suspense } from "react"
+import type { Metadata } from "next"
 import { DASHBOARD_DATA } from "@/data/mock-data"
 import { HeroBanner } from "@/app/dashboard/components/HeroBanner"
 import { MetricsCards } from "@/app/dashboard/components/MetricsCards"
@@ -10,74 +8,73 @@ import { ProductList } from "@/app/dashboard/components/ProductList"
 import { ProductCatalog } from "@/app/dashboard/components/ProductCatalog"
 import { RevenueChart } from "@/app/dashboard/components/RevenueChart"
 import { RecentActivity } from "@/app/dashboard/components/RecentActivity"
+import {
+  HeroBannerSkeleton,
+  MetricsCardsSkeleton,
+  RevenueChartSkeleton,
+  RecentActivitySkeleton,
+  OrdersTableSkeleton,
+  ProductListSkeleton,
+  ProductCatalogSkeleton,
+} from "@/app/dashboard/components/skeletons"
 
-export default function DashboardPage() {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null
-  )
-  const [isLoading, setIsLoading] = useState(true)
+export const metadata: Metadata = {
+  title: "Overview — ShopMetrics",
+  description: "E-commerce analytics dashboard overview",
+}
 
-  useEffect(() => {
-    const loadDashboard = async () => {
-      setIsLoading(true)
+async function getDashboardData() {
+  const [metrics, orders, products, revenue] = await Promise.all([
+    fetchMetrics(),
+    fetchOrders(),
+    fetchProducts(),
+    fetchRevenue(),
+  ])
+  return { metrics, orders, products, revenue }
+}
 
-      const metrics = await fetchMetrics()
-      const orders = await fetchOrders()
-      const products = await fetchProducts()
-      const revenue = await fetchRevenue()
-
-      setDashboardData({
-        ...DASHBOARD_DATA,
-        metrics,
-        recentOrders: orders,
-        topProducts: products,
-        revenueByMonth: revenue,
-      })
-      setIsLoading(false)
-    }
-
-    loadDashboard()
-  }, [])
-
-  if (isLoading || !dashboardData) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
-          <p className="text-gray-500 text-lg">Loading dashboard...</p>
-          <p className="text-gray-400 text-sm mt-1">
-            Fetching 5,000 products and metrics
-          </p>
-        </div>
-      </div>
-    )
-  }
+export default async function DashboardPage() {
+  const { metrics, orders, products, revenue } = await getDashboardData()
 
   return (
     <div className="space-y-6">
-      <HeroBanner />
+      <Suspense fallback={<HeroBannerSkeleton />}>
+        <HeroBanner />
+      </Suspense>
 
-      <MetricsCards dashboardData={dashboardData} />
+      <Suspense fallback={<MetricsCardsSkeleton />}>
+        <MetricsCards metrics={metrics} />
+      </Suspense>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <RevenueChart data={dashboardData.revenueByMonth} />
+          <Suspense fallback={<RevenueChartSkeleton />}>
+            <RevenueChart data={revenue} />
+          </Suspense>
         </div>
         <div>
-          <RecentActivity />
+          <Suspense fallback={<RecentActivitySkeleton />}>
+            <RecentActivity />
+          </Suspense>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <OrdersTable orders={dashboardData.recentOrders} />
+          <Suspense fallback={<OrdersTableSkeleton />}>
+            <OrdersTable orders={orders} />
+          </Suspense>
         </div>
         <div>
-          <ProductList products={dashboardData.topProducts} />
+          <Suspense fallback={<ProductListSkeleton />}>
+            <ProductList products={products} />
+          </Suspense>
         </div>
       </div>
 
-      <ProductCatalog />
+      <Suspense fallback={<ProductCatalogSkeleton />}>
+        <ProductCatalog />
+      </Suspense>
     </div>
   )
 }

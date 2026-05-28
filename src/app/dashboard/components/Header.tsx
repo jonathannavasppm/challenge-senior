@@ -1,18 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useDashboardContext } from "@/app/dashboard/context/DashboardContext"
 
 export function Header() {
-  const { configuracionUsuario } = useDashboardContext()
+  const { userConfig } = useDashboardContext()
   const [showNotifications, setShowNotifications] = useState(false)
 
-  const currentTime = new Date().toLocaleString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+  const currentTime = useMemo(
+    () =>
+      new Date().toLocaleString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    []
+  )
 
   return (
     <header className="bg-white border-b border-gray-100 px-6 py-4">
@@ -21,7 +25,12 @@ export function Header() {
           <h1 className="text-xl font-semibold text-gray-900">
             Dashboard Overview
           </h1>
-          <p className="text-sm text-gray-500">{currentTime}</p>
+          <p
+            className="text-sm text-gray-500 h-5"
+            suppressHydrationWarning
+          >
+            {currentTime}
+          </p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -32,9 +41,9 @@ export function Header() {
               aria-label="Notifications"
             >
               <span className="text-lg">🔔</span>
-              {configuracionUsuario.notificaciones > 0 && (
+              {userConfig.notifications > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {configuracionUsuario.notificaciones}
+                  {userConfig.notifications}
                 </span>
               )}
             </button>
@@ -45,7 +54,7 @@ export function Header() {
                   Notifications
                 </h3>
                 <p className="text-sm text-gray-500">
-                  You have {configuracionUsuario.notificaciones} new
+                  You have {userConfig.notifications} new
                   notifications
                 </p>
               </div>
@@ -54,13 +63,13 @@ export function Header() {
 
           <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
             <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm">
-              {configuracionUsuario.avatar}
+              {userConfig.avatar}
             </div>
             <div className="hidden sm:block">
               <p className="text-sm font-medium text-gray-900">
-                {configuracionUsuario.nombre}
+                {userConfig.name}
               </p>
-              <p className="text-xs text-gray-500">{configuracionUsuario.rol}</p>
+              <p className="text-xs text-gray-500">{userConfig.role}</p>
             </div>
           </div>
         </div>

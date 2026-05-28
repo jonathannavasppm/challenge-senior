@@ -2,27 +2,27 @@
 
 import { useState } from "react"
 import type { Order, OrderStatus } from "@/app/dashboard/types"
-import { formatearMoneda, formatearFecha } from "@/app/dashboard/utils/formatters"
+import { formatCurrency, formatDate } from "@/app/dashboard/utils/formatters"
 
 interface OrdersTableProps {
   orders: Order[]
 }
 
-function obtenerClaseEstado(status: OrderStatus): string {
-  const clases: Record<OrderStatus, string> = {
+function getStatusClass(status: OrderStatus): string {
+  const statusClasses: Record<OrderStatus, string> = {
     pending: "bg-yellow-100 text-yellow-700",
     processing: "bg-blue-100 text-blue-700",
     shipped: "bg-purple-100 text-purple-700",
     delivered: "bg-green-100 text-green-700",
     cancelled: "bg-red-100 text-red-700",
   }
-  return clases[status] || "bg-gray-100 text-gray-700"
+  return statusClasses[status] || "bg-gray-100 text-gray-700"
 }
 
 export function OrdersTable({ orders }: OrdersTableProps) {
   const [sortField, setSortField] = useState<keyof Order>("date")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
-  const [filaSeleccionada, setFilaSeleccionada] = useState<string | null>(null)
+  const [selectedRow, setSelectedRow] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
 
   const handleSort = (field: keyof Order) => {
@@ -40,7 +40,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       order.id.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const sortedOrders = filteredOrders.sort((a, b) => {
+  const sortedOrders = filteredOrders.toSorted((a, b) => {
     const aVal = a[sortField]
     const bVal = b[sortField]
     const multiplier = sortDirection === "asc" ? 1 : -1
@@ -96,19 +96,25 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             </tr>
           </thead>
           <tbody>
-            {sortedOrders.slice(0, 20).map((order, index) => (
+            {sortedOrders.slice(0, 20).map((order) => (
               <tr
-                key={index}
+                key={order.id}
+                tabIndex={0}
+                role="button"
+                aria-pressed={selectedRow === order.id}
                 className={`border-b border-gray-50 transition-colors cursor-pointer ${
-                  filaSeleccionada === order.id
+                  selectedRow === order.id
                     ? "bg-indigo-50"
                     : "hover:bg-gray-50"
                 }`}
                 onClick={() =>
-                  setFilaSeleccionada(
-                    filaSeleccionada === order.id ? null : order.id
-                  )
+                  setSelectedRow(selectedRow === order.id ? null : order.id)
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setSelectedRow(selectedRow === order.id ? null : order.id)
+                  }
+                }}
               >
                 <td className="px-6 py-4 text-sm font-medium text-indigo-600">
                   {order.id}
@@ -120,17 +126,17 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   <div className="text-xs text-gray-500">{order.email}</div>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
-                  {formatearMoneda(order.total)}
+                  {formatCurrency(order.total)}
                 </td>
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${obtenerClaseEstado(order.status)}`}
+                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(order.status)}`}
                   >
                     {order.status}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
-                  {formatearFecha(order.date)}
+                  {formatDate(order.date)}
                 </td>
               </tr>
             ))}

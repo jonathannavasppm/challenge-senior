@@ -3,16 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Header } from "@/app/dashboard/components/index"
-
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Overview", icon: "📊" },
-  { href: "/dashboard/orders", label: "Orders", icon: "📦" },
-  { href: "/dashboard/products", label: "Products", icon: "🛍️" },
-  { href: "/dashboard/customers", label: "Customers", icon: "👥" },
-  { href: "/dashboard/analytics", label: "Analytics", icon: "📈" },
-  { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
-]
+import { NAV_ITEMS } from "./const"
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -66,12 +57,12 @@ export function Sidebar() {
       <div className="p-3 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 py-2">
           <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-sm">
-            JN
+            JD
           </div>
           {!isCollapsed && (
             <div className="min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                Jonathan Navas
+                Jhon Doe
               </p>
               <p className="text-xs text-gray-500">Admin</p>
             </div>

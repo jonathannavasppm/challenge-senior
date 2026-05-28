@@ -1,40 +1,40 @@
 import type { Product, Order, FilterOptions } from "@/app/dashboard/types"
 
-export function obtenerProductos(
-  productos: Product[],
+export function getProducts(
+  products: Product[],
   limit?: number
 ): Product[] {
   if (limit) {
-    return productos.slice(0, limit)
+    return products.slice(0, limit)
   }
-  return productos
+  return products
 }
 
-export function calcularDescuento(
-  precio: number,
-  precioOriginal: number
+export function calculateDiscount(
+  price: number,
+  originalPrice: number
 ): number {
-  if (precioOriginal <= 0) return 0
-  const discount = ((precioOriginal - precio) / precioOriginal) * 100
+  if (originalPrice <= 0) return 0
+  const discount = ((originalPrice - price) / originalPrice) * 100
   return Math.round(discount)
 }
 
-export function filtrarPorCategoria(
-  productos: Product[],
-  categoria: string
+export function filterByCategory(
+  products: Product[],
+  category: string
 ): Product[] {
-  if (!categoria || categoria === "all") return productos
-  return productos.filter(
-    (p) => p.category.toLowerCase() === categoria.toLowerCase()
+  if (!category || category === "all") return products
+  return products.filter(
+    (p) => p.category.toLowerCase() === category.toLowerCase()
   )
 }
 
-export function ordenarPorPrecio(
-  productos: Product[],
-  orden: "asc" | "desc" = "asc"
+export function sortByPrice(
+  products: Product[],
+  order: "asc" | "desc" = "asc"
 ): Product[] {
-  return productos.sort((a, b) =>
-    orden === "asc" ? a.price - b.price : b.price - a.price
+  return products.toSorted((a, b) =>
+    order === "asc" ? a.price - b.price : b.price - a.price
   )
 }
 
@@ -54,7 +54,7 @@ export function filterProducts(
   }
 
   if (options.category && options.category !== "all") {
-    result = filtrarPorCategoria(result, options.category)
+    result = filterByCategory(result, options.category)
   }
 
   if (options.minPrice > 0) {

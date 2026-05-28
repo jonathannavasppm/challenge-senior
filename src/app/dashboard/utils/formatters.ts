@@ -1,23 +1,23 @@
 import type { OrderStatus, EstadoPedido } from "@/app/dashboard/types"
 
-export function formatearMoneda(
-  valor: number,
-  moneda: string = "USD"
+export function formatCurrency(
+  value: number,
+  currency: string = "USD"
 ): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: moneda,
-  }).format(valor)
+    currency,
+  }).format(value)
 }
 
-export function formatearFecha(
-  fecha: string,
-  formato: "short" | "long" | "relative" = "short"
+export function formatDate(
+  date: string,
+  format: "short" | "long" | "relative" = "short"
 ): string {
-  const date = new Date(fecha)
+  const dateObj = new Date(date)
 
-  if (formato === "relative") {
-    const diffMs = Date.now() - date.getTime()
+  if (format === "relative") {
+    const diffMs = Date.now() - dateObj.getTime()
     const diffMin = Math.floor(diffMs / 60000)
     if (diffMin < 1) return "just now"
     if (diffMin < 60) return `${diffMin}m ago`
@@ -27,22 +27,22 @@ export function formatearFecha(
     return `${diffDays}d ago`
   }
 
-  if (formato === "long") {
-    return date.toLocaleDateString("en-US", {
+  if (format === "long") {
+    return dateObj.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     })
   }
 
-  return date.toLocaleDateString("en-US", {
+  return dateObj.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   })
 }
 
-export function obtenerEstadoPedido(status: OrderStatus): EstadoPedido {
+export function getOrderStatus(status: OrderStatus): EstadoPedido {
   const mapping: Record<OrderStatus, EstadoPedido> = {
     pending: "pendiente",
     processing: "procesando",

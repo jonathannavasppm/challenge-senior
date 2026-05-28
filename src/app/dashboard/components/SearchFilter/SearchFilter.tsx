@@ -2,50 +2,43 @@
 
 import { useState, useEffect } from "react"
 import type { FilterOptions } from "@/app/dashboard/types"
+import { CATEGORIES } from "./const"
 
 interface SearchFilterProps {
   onFilterChange: (filters: Partial<FilterOptions>) => void
   totalResults: number
 }
 
-const CATEGORIES = [
-  "all",
-  "Electronics",
-  "Clothing",
-  "Home & Garden",
-  "Sports",
-  "Books",
-  "Toys",
-  "Beauty",
-  "Automotive",
-]
-
 export function SearchFilter({
   onFilterChange,
   totalResults,
 }: SearchFilterProps) {
-  const [terminoBusqueda, setTerminoBusqueda] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] =
     useState<FilterOptions["sortBy"]>("name")
   const [sortOrder, setSortOrder] =
     useState<FilterOptions["sortOrder"]>("asc")
 
-  const manejarCambioBusqueda = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTerminoBusqueda(e.target.value)
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
   }
 
   useEffect(() => {
-    onFilterChange({
-      search: terminoBusqueda,
-      category: selectedCategory,
-      sortBy,
-      sortOrder,
-    })
-  }, [terminoBusqueda, selectedCategory, sortBy, sortOrder, onFilterChange])
+    const timeoutId = setTimeout(() => {
+      onFilterChange({
+        search: searchTerm,
+        category: selectedCategory,
+        sortBy,
+        sortOrder,
+      })
+    }, 150)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, selectedCategory, sortBy, sortOrder, onFilterChange])
 
   const handleClear = () => {
-    setTerminoBusqueda("")
+    setSearchTerm("")
     setSelectedCategory("all")
     setSortBy("name")
     setSortOrder("asc")
@@ -61,8 +54,8 @@ export function SearchFilter({
           <input
             type="text"
             placeholder="Search products..."
-            value={terminoBusqueda}
-            onChange={manejarCambioBusqueda}
+            value={searchTerm}
+            onChange={handleSearchChange}
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -99,7 +92,7 @@ export function SearchFilter({
           <option value="stock-desc">Most Stock</option>
         </select>
 
-        {(terminoBusqueda || selectedCategory !== "all") && (
+        {(searchTerm || selectedCategory !== "all") && (
           <button
             onClick={handleClear}
             className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
@@ -110,7 +103,7 @@ export function SearchFilter({
       </div>
 
       <div className="mt-2 text-xs text-gray-500">
-        {totalResults.toLocaleString()} products found
+        <span suppressHydrationWarning>{totalResults.toLocaleString("en-US")} products found</span>
       </div>
     </div>
   )

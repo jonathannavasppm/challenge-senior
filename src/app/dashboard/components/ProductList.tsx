@@ -1,42 +1,39 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useMemo, useState } from "react"
+import Image from "next/image"
 import type { Product } from "@/app/dashboard/types"
-import { formatearMoneda } from "@/app/dashboard/utils/formatters"
+import { formatCurrency } from "@/app/dashboard/utils/formatters"
 
 interface ProductListProps {
-  products: Product[]
+  readonly products: Product[]
 }
 
 export function ProductList({ products }: ProductListProps) {
-  const [topProducts, setTopProducts] = useState<Product[]>([])
   const [filterText, setFilterText] = useState("")
-  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    const filtered = products.filter((p) =>
-      p.name.toLowerCase().includes(filterText.toLowerCase())
-    )
-    setTopProducts(filtered)
-  }, [products, filterText])
+  const topProducts = useMemo(
+    () =>
+      products.filter((p) =>
+        p.name.toLowerCase().includes(filterText.toLowerCase())
+      ),
+    [products, filterText]
+  )
 
   return (
-    <div
-      className="rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-      style={{ backgroundColor: "#ffffff" }}
-    >
-      <div className="p-6 border-b border-gray-100 bg-[#1a1a2e]">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="p-6 border-b border-gray-100 bg-indigo-950">
         <h2 className="text-lg font-semibold text-white">Top Products</h2>
-        <p className="text-sm text-blue-200 mt-0.5">
+        <p className="text-sm text-indigo-300 mt-0.5">
           Best performing this month
         </p>
       </div>
 
       <div className="p-4 border-b border-gray-100">
         <input
-          ref={inputRef}
+          type="text"
           placeholder="Filter products..."
-          defaultValue=""
+          value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
@@ -51,20 +48,24 @@ export function ProductList({ products }: ProductListProps) {
             <span className="text-sm font-bold text-gray-400 w-6 text-center">
               {idx + 1}
             </span>
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-            />
+            <div className="relative w-12 h-12 shrink-0">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                sizes="48px"
+                className="rounded-lg object-cover"
+              />
+            </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
                 {product.name}
               </p>
               <p className="text-xs text-gray-500">{product.category}</p>
             </div>
-            <div className="text-right flex-shrink-0">
+            <div className="text-right shrink-0">
               <p className="text-sm font-semibold text-gray-900">
-                {formatearMoneda(product.price)}
+                {formatCurrency(product.price)}
               </p>
               <div className="flex items-center gap-1 justify-end">
                 <span className="text-yellow-400 text-xs">★</span>
