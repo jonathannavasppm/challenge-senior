@@ -13,7 +13,7 @@ export function RecentActivity() {
   }, [lastUpdated])
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
@@ -37,7 +37,7 @@ export function RecentActivity() {
         </div>
       </div>
 
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-gray-50 grow overflow-y-auto">
         {activities.slice(0, 8).map((activity) => (
           <div key={activity.id} className="flex items-start gap-3 p-4">
             <span className="text-lg flex-shrink-0 mt-0.5">

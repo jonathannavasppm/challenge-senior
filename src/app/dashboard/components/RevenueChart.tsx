@@ -27,7 +27,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
     : null
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">
@@ -70,7 +70,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
         </div>
       )}
 
-      <div className="flex items-end gap-1.5 h-48">
+      <div className="flex items-end gap-1.5 grow min-h-48">
         {data.map((point) => {
           const height =
             maxValue > 0
@@ -103,7 +103,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
         })}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between text-xs text-gray-500">
+      <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between text-xs text-gray-500">
         <span>
           Total:{" "}
           {viewMode === "revenue"
