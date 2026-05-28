@@ -25,8 +25,18 @@ export const ProductCard = memo(function ProductCard({
 
   return (
     <div
-      className="bg-white rounded-lg border shadow-sm border-gray-100 hover:shadow-lg hover:border-indigo-200 transition-all duration-200 overflow-hidden"
+      className="bg-white rounded-lg border shadow-sm border-gray-100 hover:shadow-lg hover:border-indigo-200 transition-all duration-200 overflow-hidden cursor-pointer"
       onClick={() => setIsExpanded((prev) => !prev)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          setIsExpanded((prev) => !prev)
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-expanded={isExpanded}
+      aria-label={`${product.name} — ${formatCurrency(product.price)}`}
     >
       <div className="relative h-40">
         <Image
@@ -62,10 +72,13 @@ export const ProductCard = memo(function ProductCard({
           {product.name}
         </h3>
 
-        <div className="flex items-center gap-1 mt-1 mb-2">
-          <span className="text-yellow-400 text-xs">★</span>
+        <div
+          className="flex items-center gap-1 mt-1 mb-2"
+          aria-label={`Rating: ${product.rating} out of 5, ${product.reviewCount} reviews`}
+        >
+          <span className="text-yellow-400 text-xs" aria-hidden="true">★</span>
           <span className="text-xs text-gray-600">{product.rating}</span>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-500">
             ({product.reviewCount})
           </span>
         </div>
@@ -75,7 +88,7 @@ export const ProductCard = memo(function ProductCard({
             {formatCurrency(product.price)}
           </span>
           {product.originalPrice > product.price && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-xs text-gray-500 line-through">
               {formatCurrency(product.originalPrice)}
             </span>
           )}

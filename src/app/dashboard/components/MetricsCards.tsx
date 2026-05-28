@@ -15,7 +15,7 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
           <span className="text-sm font-medium text-gray-500 tracking-wide">
             Total Revenue
           </span>
-          <span className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-xl">
+          <span className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-xl" role="img" aria-label="Revenue icon">
             💰
           </span>
         </div>
@@ -37,7 +37,7 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
           <span className="text-sm font-medium text-gray-500 tracking-wide">
             Total Orders
           </span>
-          <span className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-xl">
+          <span className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-xl" role="img" aria-label="Orders icon">
             📦
           </span>
         </div>
@@ -59,7 +59,7 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
           <span className="text-sm font-medium text-gray-500 tracking-wide">
             Avg. Order Value
           </span>
-          <span className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-xl">
+          <span className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-xl" role="img" aria-label="Cart icon">
             🛒
           </span>
         </div>
@@ -81,7 +81,7 @@ export function MetricsCards({ metrics }: MetricsCardsProps) {
           <span className="text-sm font-medium text-gray-500 tracking-wide">
             Conversion Rate
           </span>
-          <span className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-xl">
+          <span className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-xl" role="img" aria-label="Conversion icon">
             📈
           </span>
         </div>

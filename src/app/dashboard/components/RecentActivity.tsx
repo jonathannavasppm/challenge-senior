@@ -20,7 +20,7 @@ export function RecentActivity() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activity
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5" suppressHydrationWarning>
+            <p className="text-xs text-gray-500 mt-0.5" suppressHydrationWarning>
               Last updated: {formattedTime}
             </p>
           </div>
@@ -47,7 +47,7 @@ export function RecentActivity() {
               <p className="text-sm text-gray-700 leading-tight">
                 {activity.message}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5" suppressHydrationWarning>
+              <p className="text-xs text-gray-500 mt-0.5" suppressHydrationWarning>
                 {formatDate(activity.timestamp, "relative")}
               </p>
             </div>

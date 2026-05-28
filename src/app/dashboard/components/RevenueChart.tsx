@@ -5,7 +5,7 @@ import type { RevenueDataPoint } from "@/app/dashboard/types"
 import { formatCurrency } from "@/app/dashboard/utils/formatters"
 
 interface RevenueChartProps {
-  data: RevenueDataPoint[]
+  readonly data: RevenueDataPoint[]
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
@@ -82,8 +82,13 @@ export function RevenueChart({ data }: RevenueChartProps) {
             <div
               key={point.month}
               className="flex-1 flex flex-col items-center gap-1 cursor-pointer group"
+              tabIndex={0}
+              role="button"
+              aria-label={`${point.month}: ${formatValue(getValue(point))}`}
               onMouseEnter={() => setActiveMonth(point.month)}
               onMouseLeave={() => setActiveMonth(null)}
+              onFocus={() => setActiveMonth(point.month)}
+              onBlur={() => setActiveMonth(null)}
             >
               <div className="w-full flex items-end" style={{ height: "100%" }}>
                 <div
@@ -95,7 +100,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   style={{ height: `${height}%` }}
                 />
               </div>
-              <span className="text-xs text-gray-400 leading-none">
+              <span className="text-xs text-gray-500 leading-none">
                 {point.month}
               </span>
             </div>

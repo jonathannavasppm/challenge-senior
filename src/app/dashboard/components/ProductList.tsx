@@ -35,6 +35,7 @@ export function ProductList({ products }: ProductListProps) {
           placeholder="Filter products..."
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
+          aria-label="Filter products by name"
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
@@ -67,8 +68,11 @@ export function ProductList({ products }: ProductListProps) {
               <p className="text-sm font-semibold text-gray-900">
                 {formatCurrency(product.price)}
               </p>
-              <div className="flex items-center gap-1 justify-end">
-                <span className="text-yellow-400 text-xs">★</span>
+              <div
+                className="flex items-center gap-1 justify-end"
+                aria-label={`Rating: ${product.rating} out of 5`}
+              >
+                <span className="text-yellow-400 text-xs" aria-hidden="true">★</span>
                 <span className="text-xs text-gray-500">{product.rating}</span>
               </div>
             </div>

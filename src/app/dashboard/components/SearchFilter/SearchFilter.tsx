@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type { FilterOptions } from "@/app/dashboard/types"
+import { useDebounce } from "@/app/dashboard/hooks/useDebounce"
 import { CATEGORIES } from "./const"
 
 interface SearchFilterProps {
@@ -20,22 +21,20 @@ export function SearchFilter({
   const [sortOrder, setSortOrder] =
     useState<FilterOptions["sortOrder"]>("asc")
 
+  const debouncedSearch = useDebounce(searchTerm)
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      onFilterChange({
-        search: searchTerm,
-        category: selectedCategory,
-        sortBy,
-        sortOrder,
-      })
-    }, 150)
-
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm, selectedCategory, sortBy, sortOrder, onFilterChange])
+    onFilterChange({
+      search: debouncedSearch,
+      category: selectedCategory,
+      sortBy,
+      sortOrder,
+    })
+  }, [debouncedSearch, selectedCategory, sortBy, sortOrder, onFilterChange])
 
   const handleClear = () => {
     setSearchTerm("")
@@ -56,6 +55,7 @@ export function SearchFilter({
             placeholder="Search products..."
             value={searchTerm}
             onChange={handleSearchChange}
+            aria-label="Search products by name or category"
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>

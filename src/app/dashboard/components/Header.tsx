@@ -1,11 +1,40 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useRef, useCallback } from "react"
 import { useDashboardContext } from "@/app/dashboard/context/DashboardContext"
 
 export function Header() {
   const { userConfig } = useDashboardContext()
   const [showNotifications, setShowNotifications] = useState(false)
+  const notificationRef = useRef<HTMLDivElement>(null)
+
+  const handleCloseNotifications = useCallback(() => {
+    setShowNotifications(false)
+  }, [])
+
+  useEffect(() => {
+    if (!showNotifications) return
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      ) {
+        handleCloseNotifications()
+      }
+    }
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleCloseNotifications()
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("keydown", handleEscape)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [showNotifications, handleCloseNotifications])
 
   const currentTime = useMemo(
     () =>
@@ -22,9 +51,9 @@ export function Header() {
     <header className="bg-white border-b border-gray-100 px-6 py-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-900">
             Dashboard Overview
-          </h1>
+          </h2>
           <p
             className="text-sm text-gray-500 h-5"
             suppressHydrationWarning
@@ -34,7 +63,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative">
+          <div className="relative" ref={notificationRef}>
             <button
               onClick={() => setShowNotifications((prev) => !prev)}
               className="relative w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-600"

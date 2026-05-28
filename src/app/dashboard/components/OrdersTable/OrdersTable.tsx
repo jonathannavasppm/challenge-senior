@@ -1,22 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import type { Order, OrderStatus } from "@/app/dashboard/types"
+import { useState, useMemo } from "react"
+import type { Order } from "@/app/dashboard/types"
 import { formatCurrency, formatDate } from "@/app/dashboard/utils/formatters"
+import { sortByField, getStatusClass } from "@/app/dashboard/utils/helpers"
+import { useDebounce } from "@/app/dashboard/hooks/useDebounce"
+import { ORDER_COLUMNS, MAX_VISIBLE_ORDERS } from "./const"
 
 interface OrdersTableProps {
   orders: Order[]
-}
-
-function getStatusClass(status: OrderStatus): string {
-  const statusClasses: Record<OrderStatus, string> = {
-    pending: "bg-yellow-100 text-yellow-700",
-    processing: "bg-blue-100 text-blue-700",
-    shipped: "bg-purple-100 text-purple-700",
-    delivered: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-700",
-  }
-  return statusClasses[status] || "bg-gray-100 text-gray-700"
 }
 
 export function OrdersTable({ orders }: OrdersTableProps) {
@@ -24,6 +16,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
   const [selectedRow, setSelectedRow] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const debouncedSearch = useDebounce(searchTerm)
 
   const handleSort = (field: keyof Order) => {
     if (sortField === field) {
@@ -34,22 +27,21 @@ export function OrdersTable({ orders }: OrdersTableProps) {
     }
   }
 
-  const filteredOrders = orders.filter(
-    (order) =>
-      order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOrders = useMemo(
+    () =>
+      orders.filter(
+        (order) =>
+          order.customer
+            .toLowerCase()
+            .includes(debouncedSearch.toLowerCase()) ||
+          order.id
+            .toLowerCase()
+            .includes(debouncedSearch.toLowerCase())
+      ),
+    [orders, debouncedSearch]
   )
 
-  const sortedOrders = filteredOrders.toSorted((a, b) => {
-    const aVal = a[sortField]
-    const bVal = b[sortField]
-    const multiplier = sortDirection === "asc" ? 1 : -1
-
-    if (typeof aVal === "number" && typeof bVal === "number") {
-      return (aVal - bVal) * multiplier
-    }
-    return String(aVal).localeCompare(String(bVal)) * multiplier
-  })
+  const sortedOrders = sortByField(filteredOrders, sortField, sortDirection)
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -65,6 +57,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           placeholder="Search orders..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Search orders by customer or order ID"
           className="w-full max-w-xs px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
@@ -73,17 +66,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100">
-              {[
-                { key: "id", label: "Order ID" },
-                { key: "customer", label: "Customer" },
-                { key: "total", label: "Total" },
-                { key: "status", label: "Status" },
-                { key: "date", label: "Date" },
-              ].map((col) => (
+              {ORDER_COLUMNS.map((col) => (
                 <th
                   key={col.key}
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                  onClick={() => handleSort(col.key as keyof Order)}
+                  onClick={() => handleSort(col.key)}
                 >
                   {col.label}
                   {sortField === col.key && (
@@ -96,7 +83,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             </tr>
           </thead>
           <tbody>
-            {sortedOrders.slice(0, 20).map((order) => (
+            {sortedOrders.slice(0, MAX_VISIBLE_ORDERS).map((order) => (
               <tr
                 key={order.id}
                 tabIndex={0}
@@ -145,8 +132,8 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       </div>
 
       <div className="px-6 py-4 text-sm text-gray-500 border-t border-gray-100">
-        Showing {Math.min(20, sortedOrders.length)} of {sortedOrders.length}{" "}
-        orders
+        Showing {Math.min(MAX_VISIBLE_ORDERS, sortedOrders.length)} of{" "}
+        {sortedOrders.length} orders
       </div>
     </div>
   )

@@ -1,9 +1,8 @@
-export {
-  HeroBannerSkeleton,
-  MetricsCardsSkeleton,
-  RevenueChartSkeleton,
-  RecentActivitySkeleton,
-  OrdersTableSkeleton,
-  ProductListSkeleton,
-  ProductCatalogSkeleton,
-} from "./DashboardSkeletons"
+export { Skeleton } from "./Skeleton"
+export { HeroBannerSkeleton } from "./HeroBannerSkeleton"
+export { MetricsCardsSkeleton } from "./MetricsCardsSkeleton"
+export { RevenueChartSkeleton } from "./RevenueChartSkeleton"
+export { RecentActivitySkeleton } from "./RecentActivitySkeleton"
+export { OrdersTableSkeleton } from "./OrdersTableSkeleton"
+export { ProductListSkeleton } from "./ProductListSkeleton"
+export { ProductCatalogSkeleton } from "./ProductCatalogSkeleton"

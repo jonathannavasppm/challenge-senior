@@ -41,13 +41,17 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
+              aria-label={isCollapsed ? item.label : undefined}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
                   ? "bg-indigo-50 text-indigo-700"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
-              <span className="text-base">{item.icon}</span>
+              <span className="text-base" role="img" aria-hidden="true">
+                {item.icon}
+              </span>
               {!isCollapsed && <span>{item.label}</span>}
             </Link>
           )
