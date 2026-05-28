@@ -1,0 +1,61 @@
+"use client"
+
+import { usePolling } from "@/app/dashboard/hooks/usePolling"
+import { formatearFecha } from "@/app/dashboard/utils/formatters"
+
+const ACTIVITY_ICONS: Record<string, string> = {
+  order: "🛍️",
+  signup: "👤",
+  refund: "↩️",
+  review: "⭐",
+}
+
+export function RecentActivity() {
+  const { activities, lastUpdated, isPolling } = usePolling()
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="p-6 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Activity
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Last updated:{" "}
+              {new Date(lastUpdated).toLocaleTimeString()}
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isPolling ? "bg-green-400 animate-pulse" : "bg-gray-300"
+              }`}
+            />
+            <span className="text-xs text-gray-500">
+              {isPolling ? "Live" : "Paused"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="divide-y divide-gray-50">
+        {activities.slice(0, 8).map((activity) => (
+          <div key={activity.id} className="flex items-start gap-3 p-4">
+            <span className="text-lg flex-shrink-0 mt-0.5">
+              {ACTIVITY_ICONS[activity.type] || "📌"}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-gray-700 leading-tight">
+                {activity.message}
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {formatearFecha(activity.timestamp, "relative")}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

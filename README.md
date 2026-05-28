@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShopMetrics — E-commerce Analytics Dashboard
 
-## Getting Started
+> **Technical Evaluation — Senior Frontend Engineer**
 
-First, run the development server:
+## Context
+
+ShopMetrics is an internal analytics dashboard currently running in production for a mid-size e-commerce company (~50k monthly active users). The engineering team has inherited the codebase after a round of rapid development and is now facing performance complaints from both users and the operations team.
+
+**Reported symptoms from the production monitoring system:**
+
+- "The dashboard takes too long to become interactive after initial load"
+- "The product catalog section makes the browser freeze when scrolling"
+- "The hero banner causes visible layout shifts on slow connections"
+- "Some users report the page feels sluggish every time they type in the search box"
+
+Your mission: **clone this repo, get it running, and conduct a thorough code review**. Identify as many bugs, anti-patterns, performance issues, and code quality problems as you can in the allotted time.
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| UI Library | React 19 |
+| Language | TypeScript 5.x |
+| Styling | TailwindCSS v4 |
+
+---
+
+## Setup
+
+### Requirements
+
+- Node.js 20+
+- npm 10+
+
+### Installation
 
 ```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd challenge-senior
+
+# 2. Install dependencies
+npm install
+
+# 3. Copy environment variables
+cp .env.local.example .env.local
+
+# 4. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — you will be redirected to the dashboard automatically.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+├── app/
+│   ├── layout.tsx                  # Root layout
+│   ├── page.tsx                    # Redirects to /dashboard
+│   ├── globals.css
+│   └── dashboard/
+│       ├── page.tsx                # Main dashboard page
+│       ├── layout.tsx              # Dashboard shell (sidebar + header)
+│       ├── components/             # All UI components
+│       ├── hooks/                  # Custom React hooks
+│       ├── context/                # React context
+│       ├── types/                  # TypeScript types
+│       ├── utils/                  # Helper and formatter functions
+│       └── actions/                # Next.js Server Actions
+├── middleware.ts
+└── data/
+    └── mock-data.ts                # Mock data (5,000 products)
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Your Task
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Run the application** and observe its behavior
+2. **Review the codebase** systematically — components, hooks, utilities, configuration
+3. **Document every issue** you find:
+   - What the problem is
+   - Why it is a problem
+   - How you would fix it
+4. **Create a branch** (`feat/review-<your-name>`) and commit your findings:
+   - Code fixes where you have time to implement them
+   - Comments in code for issues you identified but couldn't fully fix
+   - A written summary in a `FINDINGS.md` file at the root
 
-## Deploy on Vercel
+### Evaluation Criteria
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Area | What we look for |
+|------|-----------------|
+| **Bug Detection** | Correctness of identified issues |
+| **Depth** | Surface-level vs root-cause analysis |
+| **Prioritization** | Can you distinguish critical from cosmetic issues? |
+| **Solutions** | Are your proposed fixes accurate and idiomatic? |
+| **Communication** | Clarity of explanations |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Tip:** There are issues at multiple levels of subtlety. Some are immediately visible in the browser. Others only manifest under specific conditions or at scale. Aim to go beyond what is obviously broken.
+
+---
+
+## Available Scripts
+
+```bash
+npm run dev      # Start development server
+npm run build    # Production build
+npm run lint     # Run ESLint
+```
