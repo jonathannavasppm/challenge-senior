@@ -1,117 +1,125 @@
-# EVALUATOR GUIDE — ShopMetrics Technical Assessment
+# GUÍA DEL EVALUADOR — Evaluación Técnica ShopMetrics
 
-> **⚠️ CONFIDENTIAL — Do NOT share with candidates**
+> **⚠️ CONFIDENCIAL — NO compartir con candidatos**
 
-This document lists all intentional bugs, anti-patterns, and code quality issues planted in the codebase. Use it to score candidate findings during and after the session.
+Este documento lista todos los bugs intencionales, anti-patrones y problemas de calidad de código planteados en el codebase. Úsalo para calificar los hallazgos del candidato durante y después de la sesión.
 
-**Total planted issues: 46**
-**Scoring baseline:**
-- 5–8 issues → Junior/Mid level
-- 12–16 issues → Mid-Senior level
-- 20–30+ issues → Senior (8+ years) level
+**Total de issues planteados: 54**
+**Línea base de calificación:**
+- 5–8 issues → Nivel Junior/Mid
+- 12–16 issues → Nivel Mid-Senior
+- 20–30+ issues → Nivel Senior (8+ años)
 
 ---
 
-## LEVEL 1 — Basic (8 issues)
-*Any developer with 3+ years should catch these.*
+## NIVEL 1 — Básico (8 issues)
+*Cualquier desarrollador con 3+ años debería detectar estos.*
 
-| # | File | Issue | Score Weight |
+| # | Archivo | Issue | Peso de Puntuación |
 |---|------|-------|-------------|
-| L1-1 | `dashboard/page.tsx:1` | `"use client"` on the root dashboard page — should be a Server Component | 1pt |
-| L1-2 | `dashboard/page.tsx:20-38` | Data fetching with `useEffect + useState` instead of `async` Server Component | 1pt |
-| L1-3 | `components/HeroBanner.tsx:30` | Native `<img>` tag instead of `next/image` | 1pt |
-| L1-4 | `components/HeroBanner.tsx:31` | No `width`/`height` on image → **CLS (Cumulative Layout Shift)** — page jumps on load | 1pt |
-| L1-5 | `components/HeroBanner.tsx:32` | `alt="banner"` — generic, non-descriptive alt text (accessibility) | 1pt |
-| L1-6 | `components/MetricsCards.tsx` | Inline `style={{}}` mixed with Tailwind classes throughout the component | 1pt |
-| L1-7 | `components/OrdersTable.tsx:101` | `key={index}` on a sortable list — causes incorrect reconciliation when rows reorder | 1pt |
-| L1-8 | `components/ProductList.tsx:28` | Hardcoded color `bg-[#1a1a2e]` instead of a design token or Tailwind semantic color | 1pt |
+| L1-1 | `dashboard/page.tsx:1` | `"use client"` en la página raíz del dashboard — debería ser un Server Component | 1pt |
+| L1-2 | `dashboard/page.tsx:20-38` | Data fetching con `useEffect + useState` en lugar de `async` Server Component | 1pt |
+| L1-3 | `components/HeroBanner.tsx:80-84` | Tags nativos `<img>` en lugar de `next/image` en las slides del carousel | 1pt |
+| L1-4 | `components/HeroBanner.tsx:80-84` | Sin `width`/`height` en las imágenes del carousel → **CLS (Cumulative Layout Shift)** — las slides saltan al cargar | 1pt |
+| L1-5 | `components/HeroBanner.tsx:80-84` | `alt={slide.alt}` — aunque usa el alt del slide, las imágenes del carousel sin prioridad de carga adecuada afectan LCP | 1pt |
+| L1-6 | `components/MetricsCards.tsx` | `style={{}}` inline mezclado con clases Tailwind en todo el componente | 1pt |
+| L1-7 | `components/OrdersTable.tsx:101` | `key={index}` en lista ordenable — causa reconciliación incorrecta cuando las filas se reordenan | 1pt |
+| L1-8 | `components/ProductList.tsx:28` | Color hardcodeado `bg-[#1a1a2e]` en lugar de un design token o color semántico de Tailwind | 1pt |
 
 ---
 
-## LEVEL 2 — Intermediate (14 issues)
-*A developer with 5+ years should catch these in addition to Level 1.*
+## NIVEL 2 — Intermedio (14 issues)
+*Un desarrollador con 5+ años debería detectar estos además del Nivel 1.*
 
-| # | File | Issue | Score Weight |
+| # | Archivo | Issue | Peso de Puntuación |
 |---|------|-------|-------------|
-| L2-1 | `dashboard/page.tsx:22-29` | Sequential `await` calls (cascade fetching) instead of `Promise.all` — 4 requests run serially adding ~1250ms | 2pt |
-| L2-2 | `dashboard/page.tsx` | No `generateMetadata` export — dashboard has no dynamic SEO metadata | 1pt |
-| L2-3 | `components/HeroBanner.tsx` | Image URL `?w=4000&q=100` — massive unoptimized image (3–5MB), no `srcSet`/`sizes` for responsive delivery | 2pt |
-| L2-4 | `components/HeroBanner.tsx` | No `loading="lazy"` or `priority` hint — this is the LCP element and it's not prioritized | 2pt |
-| L2-5 | `components/HeroBanner.tsx` | No blur placeholder — blank space shown until the 4000px image downloads | 1pt |
-| L2-6 | `components/MetricsCards.tsx:11` | Receives entire `DashboardData` object as prop when only `metrics` is needed (over-fetching prop) | 1pt |
-| L2-7 | `components/MetricsCards.tsx:26-38` | `setInterval` animation without `clearInterval` cleanup — timer leaks on unmount | 2pt |
-| L2-8 | `components/OrdersTable.tsx:13-18` | `obtenerClaseEstado()` function named in Spanish — inconsistent naming convention | 1pt |
-| L2-9 | `components/OrdersTable.tsx:26` | `filaSeleccionada` variable named in Spanish | 1pt |
-| L2-10 | `components/OrdersTable.tsx:101` | `<tr>` with `onClick` has no `role`, `tabIndex`, or `onKeyDown` — not keyboard accessible | 1pt |
-| L2-11 | `components/ProductCatalog.tsx` | Variables `productosFiltrados`, `estaCargando`, `cantidadTotal`, `manejarBusqueda`, `mostrarMasProductos` — all in Spanish | 1pt |
-| L2-12 | `components/ProductCatalog.tsx` | No `React.memo` on `ProductCard` — every card re-renders on each keystroke in the search box | 2pt |
-| L2-13 | `components/ProductCard.tsx:16-17` | `useState` for hover/expanded state — should be CSS `:hover` pseudo-class | 1pt |
-| L2-14 | `components/ProductList.tsx:16-21` | Derived state: `topProducts` is computed from `products + filterText` inside `useEffect + setState` — should be `useMemo` or inline computation | 2pt |
+| L2-1 | `dashboard/page.tsx:22-29` | Llamadas `await` secuenciales (cascade fetching) en lugar de `Promise.all` — 4 requests ejecutan serialmente sumando ~1250ms | 2pt |
+| L2-2 | `dashboard/page.tsx` | Sin export `generateMetadata` — el dashboard no tiene metadata SEO dinámica | 1pt |
+| L2-3 | `components/HeroBanner.tsx` | URLs de imágenes del carousel sin optimización de tamaño — cargan resoluciones mayores a las necesarias, sin `srcSet`/`sizes` para entrega responsive | 2pt |
+| L2-4 | `components/HeroBanner.tsx` | Sin hint de `loading="lazy"` o `priority` en las slides — todas las imágenes del carousel tienen la misma prioridad, el LCP no está optimizado | 2pt |
+| L2-5 | `components/HeroBanner.tsx` | Sin placeholder blur o estrategia de carga progresiva — espacio en blanco mostrado hasta que las imágenes del carousel descargan | 1pt |
+| L2-6 | `components/MetricsCards.tsx:11` | Recibe el objeto completo `DashboardData` como prop cuando solo `metrics` es necesario (over-fetching de prop) | 1pt |
+| L2-7 | `components/MetricsCards.tsx:26-38` | Animación con `setInterval` sin cleanup de `clearInterval` — timer leaks al desmontar | 2pt |
+| L2-8 | `components/OrdersTable.tsx:13-18` | Función `obtenerClaseEstado()` nombrada en español — convención de nombres inconsistente | 1pt |
+| L2-9 | `components/OrdersTable.tsx:26` | Variable `filaSeleccionada` nombrada en español | 1pt |
+| L2-10 | `components/OrdersTable.tsx:101` | `<tr>` con `onClick` no tiene `role`, `tabIndex`, ni `onKeyDown` — no es accesible por teclado | 1pt |
+| L2-11 | `components/ProductCatalog.tsx` | Variables `productosFiltrados`, `estaCargando`, `cantidadTotal`, `manejarBusqueda`, `mostrarMasProductos` — todas en español | 1pt |
+| L2-12 | `components/ProductCatalog.tsx` | Sin `React.memo` en `ProductCard` — cada tarjeta se re-renderiza en cada tecla en la caja de búsqueda | 2pt |
+| L2-13 | `components/ProductCard.tsx:16-17` | `useState` para estado de hover/expandido — debería ser pseudo-clase CSS `:hover` | 1pt |
+| L2-14 | `components/ProductList.tsx:16-21` | Estado derivado: `topProducts` se computa de `products + filterText` dentro de `useEffect + setState` — debería ser `useMemo` o computación inline | 2pt |
 
 ---
 
-## LEVEL 3 — Advanced (24 issues)
-*Only a developer with 8+ years of production experience should catch these.*
+## NIVEL 3 — Avanzado (32 issues)
+*Solo un desarrollador con 8+ años de experiencia en producción debería detectar estos.*
 
-| # | File | Issue | Score Weight |
+| # | Archivo | Issue | Peso de Puntuación |
 |---|------|-------|-------------|
-| L3-1 | `dashboard/page.tsx` | No `<Suspense>` boundaries — the entire dashboard (including 5,000 products and the 4000px banner) blocks rendering until ALL data resolves. Each section should stream independently. | 3pt |
-| L3-2 | `dashboard/layout.tsx:1` | `"use client"` on the layout + importing `Sidebar` and `Header` from barrel — forces the entire dashboard subtree into the client bundle, eliminating RSC benefits | 3pt |
-| L3-3 | `components/index.ts` | Barrel file re-exports everything including `ProductCatalog` (5,000 items) and `HeroBanner` (4MB image loader) — **kills tree-shaking**, bloats every page that imports any single component from this file | 3pt |
-| L3-4 | `components/HeroBanner.tsx:12-24` | `useEffect` + `getBoundingClientRect()` on every `resize` event to "size" the image — completely unnecessary if using `next/image` with `fill` prop or responsive `sizes`. Also missing `removeEventListener` cleanup. | 2pt |
-| L3-5 | `components/HeroBanner.tsx:33` | `style={{height: '500px'}}` fixed height — image deforms/crops on mobile. Should use `aspect-ratio` via Tailwind (`aspect-video` or `aspect-[16/9]`) | 2pt |
-| L3-6 | `components/HeroBanner.tsx:40-43` | Gradient overlay using `style={{background: 'linear-gradient(...)'}}` — should be `bg-gradient-to-b from-transparent to-black/70` Tailwind classes | 1pt |
-| L3-7 | `components/HeroBanner.tsx` | By using `<img>` instead of `next/image`, the component loses automatic WebP/AVIF conversion, which next/image provides for free. The 4000px JPEG could be served as a 200KB WebP. | 2pt |
-| L3-8 | `components/MetricsCards.tsx:19-26` | Layout thrashing: reads `ref.current.offsetHeight` (forces layout) then writes `ref.current.style.minHeight` in the same synchronous block within a `useEffect` — causes forced reflow | 3pt |
-| L3-9 | `components/OrdersTable.tsx:43-50` | `.sort()` mutates the `filteredOrders` array in place — in React 19 concurrent mode, this can cause visual inconsistencies because the same array is shared across render passes | 3pt |
-| L3-10 | `components/ProductCard.tsx:30-42` | `new IntersectionObserver()` created **per card** — with 5,000 cards, this registers 5,000 observers simultaneously. No `observer.disconnect()` in cleanup → **massive memory leak** | 3pt |
-| L3-11 | `components/ProductCard.tsx:20-23` | `allProducts.find(p => p.id === product.id)` called inside every render of every card — O(n) lookup × 5,000 cards = O(n²) on every render cycle | 3pt |
-| L3-12 | `components/ProductCatalog.tsx:91-97` | `calcularDescuento()` called inside `.map()` on every render — 5,000 × expensive calculation on each keystroke. Should be memoized per product. | 2pt |
-| L3-13 | `components/ProductCatalog.tsx` | No virtualization (no `react-window`, `react-virtuoso`, or `IntersectionObserver` pagination) — all 5,000 DOM nodes rendered simultaneously → **browser freeze** | 3pt |
-| L3-14 | `components/ProductCatalog.tsx` | No `startTransition` to defer the heavy filter/sort re-render — UI is blocked and unresponsive during the 5,000-item re-render | 3pt |
-| L3-15 | `components/ProductCatalog.tsx` | All 5,000 `<img>` tags load simultaneously — no `loading="lazy"` or batched loading → **network waterfall with 5,000 concurrent image requests** | 2pt |
-| L3-16 | `components/ProductList.tsx:36-39` | Mixed controlled/uncontrolled input: `ref` + `defaultValue` + `onChange` calling `setState`. The input is uncontrolled (`defaultValue`) but the parent drives `filterText` state — React will warn and behavior is undefined | 3pt |
-| L3-17 | `components/SearchFilter.tsx:37-43` | `useEffect` fires on every `onFilterChange` prop change — but `onFilterChange` is a new function reference each render (not memoized in parent) → **infinite render loop trigger** | 3pt |
-| L3-18 | `hooks/useProductFilters.ts:79` | `products` array in the `useEffect` dependency is a prop — if the parent passes `ALL_PRODUCTS` inline, a new array reference is created each render → **infinite loop** | 3pt |
-| L3-19 | `hooks/usePolling.ts:14-33` | `setInterval` does not pause when tab is hidden (`document.visibilityState === 'hidden'`) — continues firing API calls in background tabs, wasting bandwidth and battery | 2pt |
-| L3-20 | `hooks/usePolling.ts` | `isPolling` state is tracked but the `setInterval` is **not conditional on it** — calling `stopPolling()` changes state but does not actually stop the interval | 3pt |
-| L3-21 | `actions/dashboard.ts:8` | Module-level `requestCount` mutable variable in a Server Action — **not idempotent**. In serverless/edge deployments this counter resets per instance and per cold start, making the logged count meaningless and misleading. Each invocation has side effects beyond its declared purpose. | 3pt |
-| L3-22 | `middleware.ts` | `matcher` pattern `/((?!_next/static|_next/image|favicon.ico).*)` still runs the middleware on **all API routes, all page routes, and all non-excluded paths including fonts and manifests** — should be scoped only to the routes that need it (e.g., only `/dashboard/*`) | 2pt |
-| L3-23 | `components/Header.tsx:10-15` | `new Date().toLocaleString()` called during render — this is an **impure function** that produces different output on server vs client → **hydration mismatch** error. Must be wrapped in `useEffect` or use `suppressHydrationWarning`. | 3pt |
-| L3-24 | `dashboard/page.tsx` | Missing `loading.tsx` and `error.tsx` files in the `dashboard/` directory — no loading UI during navigation, no error boundary for failed fetches. In production, any fetch failure crashes the entire route silently. | 2pt |
+| L3-1 | `dashboard/page.tsx` | Sin boundaries `<Suspense>` — todo el dashboard (incluyendo 5,000 productos y el carousel de banners) bloquea el render hasta que TODOS los datos se resuelvan. Cada sección debería hacer streaming independiente. | 3pt |
+| L3-2 | `dashboard/layout.tsx:1` | `"use client"` en el layout + importando `Sidebar` y `Header` desde barrel — fuerza todo el subtree del dashboard al client bundle, eliminando los beneficios de RSC | 3pt |
+| L3-3 | `components/index.ts` | Barrel file re-exporta todo incluyendo `ProductCatalog` (5,000 items) y `HeroBanner` (carousel con múltiples imágenes) — **mata el tree-shaking**, aumenta el tamaño del bundle de cualquier página que importe aunque sea un solo componente desde este archivo | 3pt |
+| L3-4 | `components/HeroBanner.tsx:52-60` | **Stale closure bug** — `handleNext` se define sin `useCallback` y el `useEffect` del autoplay no incluye `handleNext` en sus dependencias. Esto causa que el interval use una versión stale de la función, potencialmente saltando slides o comportamiento errático | 3pt |
+| L3-5 | `components/HeroBanner.tsx:42-44` | `handleNext`/`handlePrev` sin `useCallback` — se recrean en cada render, causando re-renders innecesarios si se pasaran a componentes hijos memoizados | 1pt |
+| L3-6 | `components/HeroBanner.tsx:73` | `key={index}` en lugar de `key={slide.id}` — anti-patrón de React que causa problemas de reconciliación si el orden de slides cambia | 2pt |
+| L3-6a | `components/HeroBanner.tsx:88-92` | **Gradiente overlay con inline style** — `style={{ background: "linear-gradient(...)" }}` en lugar de usar clases Tailwind `bg-gradient-to-b from-transparent to-black/70` | 1pt |
+| L3-6b | `components/HeroBanner.tsx:106-119` | **Inline styles en botones de navegación** — `style={{ top: "50%", transform: "translateY(-50%") }}` en lugar de usar clases Tailwind `top-1/2 -translate-y-1/2` | 1pt |
+| L3-6c | `components/HeroBanner.tsx:121` | **Inline style en contenedor de indicadores** — `style={{ left: "50%", transform: "translateX(-50%)" }}` en lugar de clases Tailwind `left-1/2 -translate-x-1/2` | 1pt |
+| L3-7 | `components/HeroBanner.tsx` | **Carousel sin atributos de accesibilidad** — faltan `aria-label`, `aria-roledescription="carousel"`, `aria-roledescription="slide"`, `aria-hidden` en slides inactivos, y `aria-current` en indicadores. Los botones de navegación tampoco tienen `aria-label` | 2pt |
+| L3-8 | `components/HeroBanner.tsx` | **Imágenes del carousel sin lazy loading** — las 3 imágenes cargan simultáneamente en el LCP, sin `loading="lazy"` ni estrategia de carga progresiva. Todas las slides excepto la primera deberían cargar lazy | 2pt |
+| L3-9 | `components/HeroBanner.tsx` | No hay pausa del autoplay cuando la pestaña está oculta (`document.visibilitychange`) — el carousel continúa rotando en background tabs, desperdiciando ciclos de CPU | 2pt |
+| L3-10 | `components/HeroBanner.tsx` | No hay gesto de swipe táctil para navegación mobile — UX pobre en dispositivos táctiles | 1pt |
+| L3-11 | `components/HeroBanner.tsx` | Sin `prefers-reduced-motion` — el autoplay y las transiciones pueden causar mareo en usuarios con sensibilidad al movimiento | 2pt |
+| L3-12 | `components/HeroBanner.tsx` | Las transiciones CSS usan `duration-700` que puede sentirse lenta. Sin easing personalizado para transiciones más naturales | 1pt |
+| L3-13 | `components/MetricsCards.tsx:19-26` | Layout thrashing: lee `ref.current.offsetHeight` (fuerza layout) luego escribe `ref.current.style.minHeight` en el mismo bloque síncrono dentro de un `useEffect` — causa forced reflow | 3pt |
+| L3-14 | `components/OrdersTable.tsx:43-50` | `.sort()` muta el array `filteredOrders` in-place — en React 19 concurrent mode, esto puede causar inconsistencias visuales porque el mismo array se comparte entre render passes | 3pt |
+| L3-15 | `components/ProductCard.tsx:30-42` | `new IntersectionObserver()` creado **por tarjeta** — con 5,000 tarjetas, esto registra 5,000 observers simultáneamente. Sin `observer.disconnect()` en cleanup → **massive memory leak** | 3pt |
+| L3-16 | `components/ProductCard.tsx:20-23` | `allProducts.find(p => p.id === product.id)` llamado dentro de cada render de cada tarjeta — búsqueda O(n) × 5,000 tarjetas = O(n²) en cada ciclo de render | 3pt |
+| L3-17 | `components/ProductCatalog.tsx:91-97` | `calcularDescuento()` llamado dentro de `.map()` en cada render — 5,000 × cálculo costoso en cada tecla. Debería estar memoizado por producto. | 2pt |
+| L3-18 | `components/ProductCatalog.tsx` | Sin virtualización (sin `react-window`, `react-virtuoso`, o paginación con `IntersectionObserver`) — los 5,000 nodos DOM renderizados simultáneamente → **congelamiento del browser** | 3pt |
+| L3-19 | `components/ProductCatalog.tsx` | Sin `startTransition` para diferir el re-render pesado de filter/sort — la UI se bloquea y no responde durante el re-render de 5,000 items | 3pt |
+| L3-20 | `components/ProductCatalog.tsx` | Los 5,000 tags `<img>` cargan simultáneamente — sin `loading="lazy"` o carga batcheada → **network waterfall con 5,000 requests de imagen concurrentes** | 2pt |
+| L3-21 | `components/ProductList.tsx:36-39` | Input mezclado controlled/uncontrolled: `ref` + `defaultValue` + `onChange` llamando `setState`. El input es uncontrolled (`defaultValue`) pero el parent maneja el estado `filterText` — React advertirá y el comportamiento es indefinido | 3pt |
+| L3-22 | `components/SearchFilter.tsx:37-43` | `useEffect` dispara en cada cambio de prop `onFilterChange` — pero `onFilterChange` es una nueva referencia de función cada render (no memoizado en el parent) → **disparador de infinite render loop** | 3pt |
+| L3-23 | `hooks/useProductFilters.ts:79` | El array `products` en la dependencia del `useEffect` es una prop — si el parent pasa `ALL_PRODUCTS` inline, se crea una nueva referencia de array cada render → **infinite loop** | 3pt |
+| L3-24 | `hooks/usePolling.ts:14-33` | `setInterval` no pausa cuando la pestaña está oculta (`document.visibilityState === 'hidden'`) — continúa disparando API calls en pestañas de background, desperdiciando ancho de banda y batería | 2pt |
+| L3-25 | `hooks/usePolling.ts` | El estado `isPolling` se trackea pero el `setInterval` **no es condicional a esto** — llamar `stopPolling()` cambia el estado pero no detiene realmente el interval | 3pt |
+| L3-26 | `actions/dashboard.ts:8` | Variable mutable `requestCount` a nivel de módulo en una Server Action — **no idempotente**. En despliegues serverless/edge este contador se resetea por instancia y por cold start, haciendo que el count loggeado sea sin sentido y engañoso. Cada invocación tiene side effects más allá de su propósito declarado. | 3pt |
+| L3-27 | `middleware.ts` | El patrón `matcher` `/((?!_next/static|_next/image|favicon.ico).*)` aún ejecuta el middleware en **todas las rutas API, todas las rutas de página, y todos los paths no excluidos incluyendo fonts y manifests** — debería estar scopeado solo a las rutas que lo necesitan (ej. solo `/dashboard/*`) | 2pt |
+| L3-28 | `components/Header.tsx:10-15` | `new Date().toLocaleString()` llamado durante el render — esta es una **función impura** que produce output diferente en server vs client → error de **hydration mismatch**. Debe envolverse en `useEffect` o usar `suppressHydrationWarning`. | 3pt |
+| L3-29 | `dashboard/page.tsx` | Faltan archivos `loading.tsx` y `error.tsx` en el directorio `dashboard/` — no hay loading UI durante la navegación, ni error boundary para fetches fallidos. En producción, cualquier fallo de fetch crashea toda la ruta silenciosamente. | 2pt |
 
 ---
 
-## Scoring Guide
+## Guía de Puntuación
 
-| Score | Assessment |
+| Puntaje | Evaluación |
 |-------|-----------|
-| 0–10 pts | Mid-level (3–4 years) |
-| 11–25 pts | Senior-leaning (5–6 years) |
-| 26–45 pts | Senior (7–8 years) |
-| 46–70 pts | Staff-level (8+ years, deep Next.js/React knowledge) |
+| 0–10 pts | Nivel Mid (3–4 años) |
+| 11–25 pts | Tendencia a Senior (5–6 años) |
+| 26–45 pts | Senior (7–8 años) |
+| 46–70 pts | Staff-level (8+ años, conocimiento profundo de Next.js/React) |
 
-### Bonus Points (interviewer discretion)
-- **+3pt** Candidate proposes `react-virtuoso` or `react-window` with a concrete implementation sketch
-- **+3pt** Candidate explains the RSC boundary model and how to correctly split client/server in `layout.tsx`
-- **+3pt** Candidate mentions `useOptimistic` or concurrent features as the fix for the `startTransition` gap
-- **+2pt** Candidate notices that `useDashboard.ts` exists but is **never used** (dead code)
-- **+2pt** Candidate explains that the barrel file issue can be partially mitigated with `/* @__PURE__ */` or path-based imports
+### Puntos Extra (a discreción del entrevistador)
+- **+3pt** El candidato propone `react-virtuoso` o `react-window` con un sketch de implementación concreto
+- **+3pt** El candidato explica el modelo de boundaries RSC y cómo correctamente dividir client/server en `layout.tsx`
+- **+3pt** El candidato menciona `useOptimistic` o features concurrentes como fix para el gap de `startTransition`
+- **+2pt** El candidato nota que `useDashboard.ts` existe pero **nunca se usa** (dead code)
+- **+2pt** El candidato explica que el issue del barrel file puede mitigarse parcialmente con `/* @__PURE__ */` o imports basados en path
 
 ---
 
-## Key Red Flags During the Session
+## Red Flags Clave Durante la Sesión
 
-- Candidate only finds visual/styling issues → not senior-level
-- Candidate finds bugs but cannot explain **why** they are bugs → surface-level knowledge
-- Candidate proposes WebSocket refactor unprompted → scope creep, poor prioritization
-- Candidate does not mention `Suspense`/streaming at all → missing core Next.js 13+ knowledge
-- Candidate focuses only on Spanish naming without finding performance issues → missing the forest for the trees
+- El candidato solo encuentra issues visuales/estilísticos → no es nivel senior
+- El candidato encuentra bugs pero no puede explicar **por qué** son bugs → conocimiento superficial
+- El candidato propone refactor a WebSocket sin ser preguntado → scope creep, mala priorización
+- El candidato no menciona `Suspense`/streaming en absoluto → falta conocimiento core de Next.js 13+
+- El candidato se enfoca solo en nombres en español sin encontrar issues de rendimiento → no ve el bosque por los árboles
 
-## Strong Positive Signals
+## Señales Positivas Fuertes
 
-- Mentions `startTransition` + virtualization together as the compound fix for `ProductCatalog`
-- Identifies the hydration mismatch in `Header.tsx` without running the app
-- Explains the IntersectionObserver × 5,000 memory leak as an O(n) observer registration problem
-- Proposes `useMemo` for derived data AND explains why `useEffect + setState` is an anti-pattern for synchronous derived state
-- Identifies that the middleware matcher runs on static assets and explains the performance cost
+- Menciona `startTransition` + virtualización juntas como el fix compuesto para `ProductCatalog`
+- Identifica el hydration mismatch en `Header.tsx` sin ejecutar la app
+- Explica el memory leak de IntersectionObserver × 5,000 como un problema de registro O(n) de observers
+- Propone `useMemo` para datos derivados Y explica por qué `useEffect + setState` es un anti-pattern para estado derivado síncrono
+- Identifica que el matcher del middleware corre en assets estáticos y explica el costo de rendimiento

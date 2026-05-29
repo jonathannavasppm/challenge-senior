@@ -1,116 +1,140 @@
-# ShopMetrics — E-commerce Analytics Dashboard
+# ShopMetrics — Dashboard de Analytics E-commerce
 
-> **Technical Evaluation — Senior Frontend Engineer**
+> **Evaluación Técnica — Senior Frontend Engineer**
 
-## Context
+## Contexto
 
-ShopMetrics is an internal analytics dashboard currently running in production for a mid-size e-commerce company (~50k monthly active users). The engineering team has inherited the codebase after a round of rapid development and is now facing performance complaints from both users and the operations team.
+ShopMetrics es un dashboard interno de analytics que actualmente se ejecuta en producción para una empresa de e-commerce de tamaño mediano (~50k usuarios activos mensuales). El equipo de ingeniería heredó este código después de una ronda de desarrollo rápido y actualmente está enfrentando quejas de rendimiento tanto de usuarios como del equipo de operaciones.
 
-**Reported symptoms from the production monitoring system:**
+**Síntomas reportados por el sistema de monitoreo en producción:**
 
-- "The dashboard takes too long to become interactive after initial load"
-- "The product catalog section makes the browser freeze when scrolling"
-- "The hero banner causes visible layout shifts on slow connections"
-- "Some users report the page feels sluggish every time they type in the search box"
-
-Your mission: **clone this repo, get it running, and conduct a thorough code review**. Identify as many bugs, anti-patterns, performance issues, and code quality problems as you can in the allotted time.
+- El dashboard tarda demasiado en volverse interactivo después de la carga inicial
+- La sección del catálogo de productos hace que el navegador se congele al hacer scroll
+- El banner principal causa cambios visibles en el layout en conexiones lentas
+- Algunos usuarios reportan que la página se siente lenta cada vez que escriben en la caja de búsqueda
 
 ---
 
-## Stack
+## Stack Tecnológico
 
-| Layer | Technology |
-|-------|-----------|
+| Capa | Tecnología |
+|------|-----------|
 | Framework | Next.js 16 (App Router) |
 | UI Library | React 19 |
-| Language | TypeScript 5.x |
-| Styling | TailwindCSS v4 |
+| Lenguaje | TypeScript 5.x |
+| Estilos | TailwindCSS v4 |
 
 ---
 
-## Setup
+## Instalación
 
-### Requirements
+### Requisitos
 
 - Node.js 20+
 - npm 10+
 
-### Installation
+### Pasos
 
 ```bash
-# 1. Clone the repository
+# 1. Clonar el repositorio
 git clone <repo-url>
 cd challenge-senior
 
-# 2. Install dependencies
+# 2. Instalar dependencias
 npm install
 
-# 3. Copy environment variables
+# 3. Copiar variables de entorno
 cp .env.local.example .env.local
 
-# 4. Start the development server
+# 4. Iniciar servidor de desarrollo
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — you will be redirected to the dashboard automatically.
+Abre [http://localhost:3000](http://localhost:3000) — serás redirigido automáticamente al dashboard.
 
 ---
 
-## Project Structure
+## Estructura del Proyecto
+
+A continuación se describe la organización del código. **Nota:** Los nombres de archivos se mantienen en inglés siguiendo las convenciones del proyecto, pero las descripciones indican la función de cada uno.
 
 ```
 src/
 ├── app/
-│   ├── layout.tsx                  # Root layout
-│   ├── page.tsx                    # Redirects to /dashboard
-│   ├── globals.css
+│   ├── layout.tsx                  # Layout raíz de la aplicación
+│   ├── page.tsx                    # Redirección a /dashboard
+│   ├── globals.css                 # Estilos globales
 │   └── dashboard/
-│       ├── page.tsx                # Main dashboard page
-│       ├── layout.tsx              # Dashboard shell (sidebar + header)
-│       ├── components/             # All UI components
-│       ├── hooks/                  # Custom React hooks
-│       ├── context/                # React context
-│       ├── types/                  # TypeScript types
-│       ├── utils/                  # Helper and formatter functions
-│       └── actions/                # Next.js Server Actions
-├── middleware.ts
+│       ├── page.tsx                # Página principal del dashboard
+│       ├── layout.tsx              # Shell del dashboard (sidebar + header)
+│       ├── components/             # Componentes de UI
+│       ├── hooks/                  # Hooks personalizados de React
+│       ├── context/                # Contextos de React
+│       ├── types/                  # Tipos de TypeScript
+│       ├── utils/                  # Funciones auxiliares y formateadores
+│       └── actions/                # Server Actions de Next.js
+├── middleware.ts                   # Middleware de Next.js
 └── data/
-    └── mock-data.ts                # Mock data (5,000 products)
+    └── mock-data.ts                # Datos de prueba (5,000 productos)
 ```
 
----
+### ¿Qué encontrarás en cada directorio?
 
-## Your Task
-
-1. **Run the application** and observe its behavior
-2. **Review the codebase** systematically — components, hooks, utilities, configuration
-3. **Document every issue** you find:
-   - What the problem is
-   - Why it is a problem
-   - How you would fix it
-4. **Create a branch** (`feat/review-<your-name>`) and commit your findings:
-   - Code fixes where you have time to implement them
-   - Comments in code for issues you identified but couldn't fully fix
-   - A written summary in a `FINDINGS.md` file at the root
-
-### Evaluation Criteria
-
-| Area | What we look for |
-|------|-----------------|
-| **Bug Detection** | Correctness of identified issues |
-| **Depth** | Surface-level vs root-cause analysis |
-| **Prioritization** | Can you distinguish critical from cosmetic issues? |
-| **Solutions** | Are your proposed fixes accurate and idiomatic? |
-| **Communication** | Clarity of explanations |
-
-> **Tip:** There are issues at multiple levels of subtlety. Some are immediately visible in the browser. Others only manifest under specific conditions or at scale. Aim to go beyond what is obviously broken.
+- **`app/`**: Contiene la estructura de rutas de Next.js App Router. El dashboard es la funcionalidad principal.
+- **`app/dashboard/components/`**: Todos los componentes visuales como tarjetas de productos, gráficos, tablas, etc.
+- **`app/dashboard/hooks/`**: Lógica reutilizable extraída en hooks personalizados.
+- **`app/dashboard/context/`**: Estado global compartido entre componentes mediante React Context.
+- **`app/dashboard/utils/`**: Funciones auxiliares para formateo de datos, cálculos, etc.
+- **`app/dashboard/actions/`**: Funciones de servidor para operaciones asíncronas.
+- **`data/`**: Datos mock extensos para simular el comportamiento con volumen real.
 
 ---
 
-## Available Scripts
+## Tu Misión
+
+Este codebase contiene **problemas de rendimiento, bugs funcionales y anti-patrones** que debes identificar. No se te indicará exactamente dónde están — parte de la evaluación es tu capacidad de auditoría y análisis del código.
+
+### Lo que debes hacer:
+
+1. **Ejecutar la aplicación** y observar su comportamiento, interacciones y rendimiento percibido
+2. **Revisar el código sistemáticamente** — componentes, hooks, utilidades, configuración
+3. **Identificar problemas** en las siguientes categorías:
+   - Bugs funcionales (cosas que no funcionan como deberían)
+   - Problemas de rendimiento (renderizados innecesarios, bloqueos, lentitud)
+   - Anti-patrones de React/Next.js
+   - Problemas de calidad de código y mantenibilidad
+   - Problemas de accesibilidad o UX
+
+4. **Documentar cada hallazgo**:
+   - ¿Cuál es el problema?
+   - ¿Por qué es un problema?
+   - ¿Cómo lo solucionarías?
+
+5. **Solucionar los problemas críticos** que identifiques — implementa los fixes directamente en el código, priorizando aquellos que afecten rendimiento, funcionalidad o estabilidad
+
+6. **Crear una rama** (`feat/review-<tu-nombre>`) y subir tus hallazgos:
+   - Fixes de código donde tengas tiempo de implementarlos
+   - Comentarios en el código para issues identificados pero que no pudiste arreglar completamente
+   - Un resumen escrito en un archivo `FINDINGS.md` en la raíz
+
+### Criterios de Evaluación
+
+| Área | Qué evaluamos |
+|------|---------------|
+| **Detección de Bugs** | Precisión al identificar problemas reales |
+| **Profundidad** | Análisis superficial vs. causa raíz |
+| **Priorización** | ¿Puedes distinguir entre issues críticos y cosméticos? |
+| **Soluciones** | ¿Son tus propuestas precisas e idiomáticas? |
+| **Comunicación** | Claridad de tus explicaciones |
+
+> **Tip:** Los problemas existen en múltiples niveles de sutileza. Algunos son visiblemente obvios en el navegador. Otros solo se manifiestan bajo condiciones específicas o a escala. Apunta a ir más allá de lo evidentemente roto.
+
+---
+
+## Scripts Disponibles
 
 ```bash
-npm run dev      # Start development server
-npm run build    # Production build
-npm run lint     # Run ESLint
+npm run dev      # Iniciar servidor de desarrollo
+npm run build    # Build de producción
+npm run lint     # Ejecutar ESLint
 ```
